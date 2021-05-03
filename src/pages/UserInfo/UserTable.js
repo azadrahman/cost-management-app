@@ -14,7 +14,16 @@ import {
 import userDB from "../../services/userData";
 import tableHead from "../../services/tableHeadData";
 import Input from "../../components/controls/Input";
+import ActionButton from "../../components/controls/ActionButton";
+import Controls from "../../components/controls/Controls";
+import Popup from "../../components/modals/Popup";
 import SearchIcon from "@material-ui/icons/Search";
+import AddIcon from "@material-ui/icons/Add";
+import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Notification from "../../components/notifications/Notification";
+import { deleteUser } from "../../services/userData";
+import DeletePopup from "../../components/modals/DeletePopup";
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -34,20 +43,45 @@ const useStyles = makeStyles(theme => ({
   },
   searchInput: {
     marginBottom: "0.6rem",
-    width: "75%",
+    width: "70%",
     color: "#000"
+  },
+  btnStyle: {
+    position: "absolute",
+    right: "4px",
+    backgroundColor: "#3d9"
   }
 }));
 
 export default function UserTable() {
   const classes = useStyles();
 
+  // notification state
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: ""
+  });
+
+  // delete Popup state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: ""
+  });
+
+  // user data state
   const [records, setRecords] = useState(userDB);
+
+  // search filter state
   const [searchItem, setSearchItem] = useState({
     fn: items => {
       return items;
     }
   });
+
+  // popup state
+  const [openPopup, setOpenPopup] = useState(false);
 
   // manage pagination
   const pages = [5, 10, 20];
@@ -79,8 +113,9 @@ export default function UserTable() {
       fn: items => {
         if (target.value == "") return items;
         else {
-          return items.filter(x =>
-            x.fullname.toLowerCase().includes(target.value)
+          return items.filter(
+            x =>
+              x.fullname.toLowerCase().indexOf(target.value.toLowerCase()) >= 0
           );
         }
       }
@@ -124,6 +159,21 @@ export default function UserTable() {
     return 0;
   }
 
+  // onDelete handle
+  const onDelete = id => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false
+    });
+    deleteUser(id);
+    setRecords(userDB);
+    setNotify({
+      isOpen: true,
+      message: "Deleted Successfully",
+      type: "error"
+    });
+  };
+
   // render pagging, sorting and search filtering
   const recordsAfterPagingAndSorting = () => {
     return SortFn(searchItem.fn(records), getComparator(order, orderBy)).slice(
@@ -145,6 +195,15 @@ export default function UserTable() {
                 <SearchIcon />
               </InputAdornment>
             )
+          }}
+        />
+        <Controls.Button
+          text="Add User"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          className={classes.btnStyle}
+          onClick={() => {
+            setOpenPopup(true);
           }}
         />
       </Toolbar>
@@ -179,11 +238,41 @@ export default function UserTable() {
               <TableCell>{record.fullname}</TableCell>
               <TableCell>{record.email}</TableCell>
               <TableCell>{record.mobile}</TableCell>
+              <TableCell>
+                <ActionButton color="primary">
+                  <EditOutlinedIcon fontSize="small" />
+                </ActionButton>
+                <ActionButton
+                  color="secondary"
+                  onClick={() => {
+                    setConfirmDialog({
+                      isOpen: true,
+                      title: "Are you sure?",
+                      subTitle: "Do you really want to delete this record?",
+                      onConfirm: () => {
+                        onDelete(record.id);
+                      }
+                    });
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </ActionButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       <TblPagination />
+      <Popup
+        title="User Form"
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      />
+      <Notification notify={notify} setNotify={setNotify} />
+      <DeletePopup
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
     </>
   );
 }

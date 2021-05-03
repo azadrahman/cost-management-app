@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "./components/layouts/header";
 import UsersInfo from "./pages/UserInfo/Users";
-import SideMenu from "./components/layouts/SideMenu";
 import {
   makeStyles,
   createMuiTheme,

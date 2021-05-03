@@ -4,7 +4,7 @@ import {
   makeStyles,
   TableBody,
   TableRow,
-  TableCell,
+  TableCell
 } from "@material-ui/core";
 import PageHeader from "../../components/layouts/PageHeader";
 import PeopleAltIcon from "@material-ui/icons/PeopleAlt";
@@ -12,8 +12,8 @@ import UserTable from "./UserTable";
 
 const useStyles = makeStyles(theme => ({
   pageContent: {
-    margin: theme.spacing(4),
-    padding: theme.spacing(2)
+    margin: theme.spacing(2.5),
+    padding: theme.spacing(1)
   }
 }));
 

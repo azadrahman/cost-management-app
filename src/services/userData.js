@@ -19,7 +19,7 @@ const userDB = [
   },
   {
     id: 4,
-    fullname: "kibria hasan",
+    fullname: "Kibria hasan",
     email: "kibria@example.com",
     mobile: "+088 017711 7711"
   },
@@ -66,5 +66,10 @@ const userDB = [
     mobile: "+088 018822 7711"
   }
 ];
+
+export function deleteUser(id) {
+  let users = userDB;
+  users.filter(x => x.id != id);
+}
 
 export default userDB;
