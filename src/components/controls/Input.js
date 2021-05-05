@@ -10,7 +10,6 @@ export default function Input(props) {
       name={name}
       value={value}
       onChange={onChange}
-      placeholder="e.g username"
       {...other}
       {...error && { error: true, helperText: error }}
     />

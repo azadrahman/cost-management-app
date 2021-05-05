@@ -11,9 +11,8 @@ import {
   Toolbar,
   InputAdornment
 } from "@material-ui/core";
-import userDB from "../../services/userData";
+import * as userUtility from "../../services/usersDatabase"
 import tableHead from "../../services/tableHeadData";
-import Input from "../../components/controls/Input";
 import ActionButton from "../../components/controls/ActionButton";
 import Controls from "../../components/controls/Controls";
 import Popup from "../../components/modals/Popup";
@@ -22,8 +21,8 @@ import AddIcon from "@material-ui/icons/Add";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Notification from "../../components/notifications/Notification";
-import { deleteUser } from "../../services/userData";
 import DeletePopup from "../../components/modals/DeletePopup";
+import UserForm from "./UserForm"
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -44,12 +43,13 @@ const useStyles = makeStyles(theme => ({
   searchInput: {
     marginBottom: "0.6rem",
     width: "70%",
-    color: "#000"
+    color: "#000",
   },
   btnStyle: {
     position: "absolute",
     right: "4px",
-    backgroundColor: "#3d9"
+    padding: '6px 14px',
+    backgroundColor: "#3d9",
   }
 }));
 
@@ -71,7 +71,7 @@ export default function UserTable() {
   });
 
   // user data state
-  const [records, setRecords] = useState(userDB);
+  const [records, setRecords] = useState(userUtility.getAllUsers());
 
   // search filter state
   const [searchItem, setSearchItem] = useState({
@@ -91,6 +91,9 @@ export default function UserTable() {
   // manage sorting
   const [order, setOrder] = useState();
   const [orderBy, setOrderBy] = useState();
+
+  // update records state 
+  const [updateRecords, setUpdateRecords] = useState(null)
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -158,6 +161,35 @@ export default function UserTable() {
     }
     return 0;
   }
+  // insertion and updating handle
+  const updateForEdit = (user, resetForm) => {
+    if (user.id == 0) {
+      userUtility.addUser(user)
+      setNotify({
+        isOpen: true,
+        message: 'New user added successfully',
+        type: 'success'
+      })
+    }
+    else {
+      userUtility.updateUser(user)
+      setNotify({
+        isOpen: true,
+        message: 'Record Updated Successfully',
+        type: 'success'
+      })
+    }
+    resetForm()
+    setUpdateRecords(null)
+    setOpenPopup(false)
+    setRecords(userUtility.getAllUsers())
+  }
+
+  // update records for edit handle
+  const updateHandle = (record) => {
+    setUpdateRecords(record)
+    setOpenPopup(true)
+  }
 
   // onDelete handle
   const onDelete = id => {
@@ -165,8 +197,8 @@ export default function UserTable() {
       ...confirmDialog,
       isOpen: false
     });
-    deleteUser(id);
-    setRecords(userDB);
+    userUtility.deleteUser(id);
+    setRecords(userUtility.getAllUsers());
     setNotify({
       isOpen: true,
       message: "Deleted Successfully",
@@ -185,7 +217,7 @@ export default function UserTable() {
   return (
     <>
       <Toolbar>
-        <Input
+        <Controls.Input
           label="Search User"
           className={classes.searchInput}
           onChange={handleSearch}
@@ -239,7 +271,10 @@ export default function UserTable() {
               <TableCell>{record.email}</TableCell>
               <TableCell>{record.mobile}</TableCell>
               <TableCell>
-                <ActionButton color="primary">
+                <ActionButton
+                  color="primary"
+                  onClick={() => updateHandle(record)}
+                >
                   <EditOutlinedIcon fontSize="small" />
                 </ActionButton>
                 <ActionButton
@@ -267,7 +302,12 @@ export default function UserTable() {
         title="User Form"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
-      />
+      >
+        <UserForm
+          updateForEdit={updateForEdit}
+          updateRecords={updateRecords}
+        />
+      </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <DeletePopup
         confirmDialog={confirmDialog}
