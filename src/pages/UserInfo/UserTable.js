@@ -114,7 +114,7 @@ export default function UserTable() {
     let target = e.target;
     setSearchItem({
       fn: items => {
-        if (target.value == "") return items;
+        if (target.value === "") return items;
         else {
           return items.filter(
             x =>
@@ -163,7 +163,7 @@ export default function UserTable() {
   }
   // insertion and updating handle
   const updateForEdit = (user, resetForm) => {
-    if (user.id == 0) {
+    if (user.id === 0) {
       userUtility.addUser(user)
       setNotify({
         isOpen: true,

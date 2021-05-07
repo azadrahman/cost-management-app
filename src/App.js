@@ -45,6 +45,7 @@ const useStyles = makeStyles({
 
 export default function App() {
   const classes = useStyles();
+
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.appMain}>

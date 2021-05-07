@@ -45,7 +45,7 @@ export default function Popup(props) {
           </ActionButton>
         </div>
       </DialogTitle>
-      <DialogContent dividers>{props.children}</DialogContent>
+      <DialogContent dividers>{children}</DialogContent>
     </Dialog>
   );
 }

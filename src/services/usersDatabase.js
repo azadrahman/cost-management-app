@@ -12,14 +12,14 @@ export function addUser(data) {
 
 export function updateUser(data) {
     let users = getAllUsers();
-    let recordIndex = users.findIndex(x => x.id == data.id);
+    let recordIndex = users.findIndex(x => x.id === data.id);
     users[recordIndex] = { ...data }
     localStorage.setItem(KEYS.users, JSON.stringify(users));
 }
 
 export function deleteUser(id) {
     let users = getAllUsers();
-    users = users.filter(x => x.id != id)
+    users = users.filter(x => x.id !== id)
     localStorage.setItem(KEYS.users, JSON.stringify(users));
 }
 

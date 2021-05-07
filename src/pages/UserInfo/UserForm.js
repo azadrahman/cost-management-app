@@ -45,8 +45,8 @@ export default function UserForm(props) {
         setErrors({
             ...temp
         })
-        if (fieldValues == fields) {
-            return Object.values(temp).every(x => x == "")
+        if (fieldValues === fields) {
+            return Object.values(temp).every(x => x === "")
         }
     }
 
@@ -60,7 +60,7 @@ export default function UserForm(props) {
     }
 
     useEffect(() => {
-        if (updateRecords != null) {
+        if (updateRecords !== null) {
             setFields({
                 ...updateRecords
             })
