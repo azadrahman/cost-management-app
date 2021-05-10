@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -11,7 +11,6 @@ import {
   Toolbar,
   InputAdornment
 } from "@material-ui/core";
-import * as userUtility from "../../services/usersDatabase"
 import tableHead from "../../services/tableHeadData";
 import ActionButton from "../../components/controls/ActionButton";
 import Controls from "../../components/controls/Controls";
@@ -23,6 +22,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Notification from "../../components/notifications/Notification";
 import DeletePopup from "../../components/modals/DeletePopup";
 import UserForm from "./UserForm"
+import axios from "axios"
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -53,6 +53,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const url = 'http://35.222.145.11/users'
+
 export default function UserTable() {
   const classes = useStyles();
 
@@ -71,7 +73,7 @@ export default function UserTable() {
   });
 
   // user data state
-  const [records, setRecords] = useState(userUtility.getAllUsers());
+  const [records, setRecords] = useState([]);
 
   // search filter state
   const [searchItem, setSearchItem] = useState({
@@ -94,6 +96,20 @@ export default function UserTable() {
 
   // update records state 
   const [updateRecords, setUpdateRecords] = useState(null)
+
+  // get all users from api
+  const fetchUsers = async () => {
+    const res = await axios.get(url)
+    return res.data
+  }
+
+  useEffect(() => {
+    const getUsers  = async () => {
+      const allUsers = await fetchUsers()
+      setRecords(allUsers.data)
+    }
+    getUsers()
+  }, [])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -118,7 +134,7 @@ export default function UserTable() {
         else {
           return items.filter(
             x =>
-              x.fullname.toLowerCase().indexOf(target.value.toLowerCase()) >= 0
+              x.name.toLowerCase().indexOf(target.value.toLowerCase()) >= 0
           );
         }
       }
@@ -161,28 +177,54 @@ export default function UserTable() {
     }
     return 0;
   }
+
+
+ // addUser to the server
+ const addUser = async (userFields) => {
+   console.log(userFields)
+  //  const req = {
+  //    ...user
+  //  }
+   const res = await axios.post(url, userFields)
+   setRecords([...userFields, res.data])
+ }
+
+// update users to the server
+//  const updateUser = (data) => {
+
+//  }
+
+ // delete user from the server
+ const deleteUser = async (id) => {
+    await axios.delete(`${url}/${id}`)
+    const newUserList = records.filter(list => {
+      return list.id !== id
+    })
+    setRecords(newUserList)
+ }
+
   // insertion and updating handle
   const updateForEdit = (user, resetForm) => {
     if (user.id === 0) {
-      userUtility.addUser(user)
+      addUser(user)
       setNotify({
         isOpen: true,
         message: 'New user added successfully',
         type: 'success'
       })
     }
-    else {
-      userUtility.updateUser(user)
-      setNotify({
-        isOpen: true,
-        message: 'Record Updated Successfully',
-        type: 'success'
-      })
-    }
+    // else {
+    //   userUtility.updateUser(user)
+    //   setNotify({
+    //     isOpen: true,
+    //     message: 'Record Updated Successfully',
+    //     type: 'success'
+    //   })
+    //}
     resetForm()
     setUpdateRecords(null)
     setOpenPopup(false)
-    setRecords(userUtility.getAllUsers())
+    // setRecords(userUtility.getAllUsers())
   }
 
   // update records for edit handle
@@ -197,8 +239,7 @@ export default function UserTable() {
       ...confirmDialog,
       isOpen: false
     });
-    userUtility.deleteUser(id);
-    setRecords(userUtility.getAllUsers());
+    deleteUser(id);
     setNotify({
       isOpen: true,
       message: "Deleted Successfully",
@@ -267,9 +308,9 @@ export default function UserTable() {
         <TableBody>
           {recordsAfterPagingAndSorting().map(record => (
             <TableRow key={record.id}>
-              <TableCell>{record.fullname}</TableCell>
+              <TableCell>{record.name}</TableCell>
               <TableCell>{record.email}</TableCell>
-              <TableCell>{record.mobile}</TableCell>
+              <TableCell>{record.phone}</TableCell>
               <TableCell>
                 <ActionButton
                   color="primary"
