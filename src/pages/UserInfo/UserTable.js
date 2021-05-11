@@ -182,15 +182,16 @@ export default function UserTable() {
  // addUser to the server
  const addUser = async (userFields) => {
    console.log(userFields)
-  //  const req = {
-  //    ...user
-  //  }
-   const res = await axios.post(url, userFields)
-   setRecords([...userFields, res.data])
+   const req = {
+     id: userFields.id,
+     ...userFields
+   }
+   const res = await axios.post(url, req)
+   setRecords([...records, res.data])
  }
 
 // update users to the server
-//  const updateUser = (data) => {
+// const updateUser = (data) => {
 
 //  }
 
@@ -224,7 +225,7 @@ export default function UserTable() {
     resetForm()
     setUpdateRecords(null)
     setOpenPopup(false)
-    // setRecords(userUtility.getAllUsers())
+    setRecords(records)
   }
 
   // update records for edit handle
