@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
+import {Link} from "react-router-dom"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,6 +24,12 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     flexGrow: 1
+  },
+  linkStyle: {
+    marginLeft: '15px',
+    color: '#fff',
+    fontWeight: 'bold',
+    textDecoration: 'none'
   }
 }));
 
@@ -100,6 +107,11 @@ export default function Header() {
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
               </Menu>
+              <div>
+                <Link className={classes.linkStyle} to="/">Home </Link>
+                <Link className={classes.linkStyle} to="/users">Users Table </Link>
+                <Link className={classes.linkStyle} to="/costs">Costs Table </Link>
+              </div>
             </div>
           )}
         </Toolbar>
