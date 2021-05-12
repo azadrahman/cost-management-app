@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   searchInput: {
-    marginBottom: "0.6rem",
+    marginBottom: "0.8rem",
     width: "70%",
     color: "#000",
   },
@@ -261,6 +261,7 @@ export default function UserTable() {
       <Toolbar>
         <Controls.Input
           label="Search User"
+          variant="standard"
           className={classes.searchInput}
           onChange={handleSearch}
           InputProps={{

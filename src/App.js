@@ -11,6 +11,7 @@ import Home from "./pages/HomeView/Home"
 import UsersInfo from "./pages/UserInfo/Users"
 import CostsView from "./pages/CostManager/CostsView"
 import Error from "./pages/Error"
+import SideMenu from "./components/layouts/SideMenu"
 
 const theme = createMuiTheme({
   palette: {
@@ -42,9 +43,9 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles({
   appMain: {
-    paddingLeft: "0px",
+    paddingLeft: "220px",
     width: "100%"
-  }
+  },
 });
 
 export default function App() {
@@ -53,6 +54,7 @@ export default function App() {
   return (
     <Router>
     <ThemeProvider theme={theme}>
+      <SideMenu />
       <div className={classes.appMain}>
         <Header />
         <Switch>
