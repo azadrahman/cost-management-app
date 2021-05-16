@@ -12,6 +12,7 @@ import UsersInfo from "./pages/UserInfo/Users"
 import CostsView from "./pages/CostManager/CostsView"
 import Error from "./pages/Error"
 import SideMenu from "./components/layouts/SideMenu"
+import EachCostDetail from "./pages/EachCostDetails/eachCostDetail"
 
 const theme = createMuiTheme({
   palette: {
@@ -59,6 +60,7 @@ export default function App() {
         <Header />
         <Switch>
           <Route path="/" component={Home} exact />
+          <Route exact path="/costs/:id" component={EachCostDetail} />
           <Route path="/users" component={UsersInfo} />
           <Route path="/costs" component={CostsView} />
           <Route component={Error} />

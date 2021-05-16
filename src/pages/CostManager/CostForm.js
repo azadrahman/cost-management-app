@@ -32,8 +32,8 @@ export default function CostForm(props) {
     setErrors({
       ...temp
     })
-    if(costFieldValues == costFields){
-      return Object.values(temp).every(x => x == "")
+    if(costFieldValues === costFields){
+      return Object.values(temp).every(x => x === "")
     }
   }
 

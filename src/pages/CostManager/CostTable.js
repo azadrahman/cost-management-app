@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,7 +9,6 @@ import {
   TablePagination,
   TableSortLabel,
   Toolbar,
-  InputAdornment
 } from "@material-ui/core";
 
 import {costTableHead} from "../../services/costUtility/costService";
@@ -24,6 +23,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Notification from "../../components/notifications/Notification";
 import DeletePopup from "../../components/modals/DeletePopup";
 import CostForm from "./CostForm"
+import {Link} from "react-router-dom"
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -75,11 +75,11 @@ export default function CostTable() {
   const [costRecords, setCostRecords] = useState(costUtility.getAllCosts());
 
   // search filter state
-  const [searchItem, setSearchItem] = useState({
-    fn: items => {
-      return items;
-    }
-  });
+  // const [searchItem, setSearchItem] = useState({
+  //   fn: items => {
+  //     return items;
+  //   }
+  // });
 
   // popup state
   const [openPopup, setOpenPopup] = useState(false);
@@ -164,7 +164,7 @@ export default function CostTable() {
   }
   // insertion and updating handle
   const costUpdateForEdit = (cost, costResetForm) => {
-    if (cost.id == 0){
+    if (cost.id === 0){
       costUtility.addCost(cost)
       setNotify({
         isOpen: true,
@@ -186,11 +186,6 @@ export default function CostTable() {
     setCostRecords(costUtility.getAllCosts())
   }
 
-  // cost view handle
-  const costViewHandle = id =>{
-    setUpdateCostRecords(id)
-    setOpenPopup(true)
-  }
 
   // update cost records for edit handle
   const updateHandle = record =>{
@@ -270,9 +265,10 @@ export default function CostTable() {
               <TableCell>
                 <ActionButton 
                   color="default"
-                  onClick={() => costViewHandle(costRecord)}
                 >
+                <Link to={`/costs/${costRecord.id}`}>
                   <VisibilityIcon fontSize="small" />
+                </Link>
                 </ActionButton>
                 <ActionButton 
                   color="primary"

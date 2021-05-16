@@ -20,14 +20,14 @@ export const costTableHead = [
   
   export function updateCost(data) {
     let costs = getAllCosts();
-    let recordIndex = costs.findIndex(x => x.id == data.id);
+    let recordIndex = costs.findIndex(x => x.id === data.id);
     costs[recordIndex] = { ...data }
     localStorage.setItem(KEYS.costs, JSON.stringify(costs));
   }
   
   export function deleteCost(id) {
     let costs = getAllCosts();
-    costs = costs.filter(x => x.id != id)
+    costs = costs.filter(x => x.id !== id)
     localStorage.setItem(KEYS.costs, JSON.stringify(costs));
   }
   

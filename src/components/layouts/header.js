@@ -12,8 +12,7 @@ import {
   Menu
 } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuIcon from '@material-ui/icons/Menu';
-import SideMenu from './SideMenu';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
