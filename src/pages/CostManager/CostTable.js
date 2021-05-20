@@ -20,10 +20,12 @@ import AddIcon from "@material-ui/icons/Add";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import DeleteIcon from "@material-ui/icons/Delete";
+import SearchIcon from "@material-ui/icons/Search";
 import Notification from "../../components/notifications/Notification";
 import DeletePopup from "../../components/modals/DeletePopup";
 import CostForm from "./CostForm"
 import {Link} from "react-router-dom"
+import DateRange from "./DateRange"
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -42,9 +44,10 @@ const useStyles = makeStyles(theme => ({
     }
   },
   searchInput: {
-    marginBottom: "0.6rem",
-    width: "70%",
-    color: "#000",
+    marginBottom: "0.3rem",
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
   },
   btnStyle: {
     position: "absolute",
@@ -73,13 +76,6 @@ export default function CostTable() {
 
   // user data state
   const [costRecords, setCostRecords] = useState(costUtility.getAllCosts());
-
-  // search filter state
-  // const [searchItem, setSearchItem] = useState({
-  //   fn: items => {
-  //     return items;
-  //   }
-  // });
 
   // popup state
   const [openPopup, setOpenPopup] = useState(false);
@@ -111,20 +107,10 @@ export default function CostTable() {
     setOrderBy(cellId);
   };
 
-//   const handleSearch = e => {
-//     let target = e.target;
-//     setSearchItem({
-//       fn: items => {
-//         if (target.value == "") return items;
-//         else {
-//           return items.filter(
-//             x =>
-//               x.costTitle.toLowerCase().indexOf(target.value.toLowerCase()) >= 0
-//           );
-//         }
-//       }
-//     });
-//   };
+  // select date range handle
+  // const handleSearch = e => {
+  //   let target = e.target;
+  // };
 
   const TblPagination = () => (
     <TablePagination
@@ -219,7 +205,12 @@ export default function CostTable() {
   return (
     <>
       <Toolbar>
-        {/* { input from date and to date from date picker} */}
+        <div className={classes.searchInput}>
+          <SearchIcon style={{marginRight:'0.4rem'}}/>
+          <DateRange
+            // onChange={handleSearch}
+          />
+        </div>
         <Controls.Button
           text="Add Cost"
           variant="outlined"
@@ -258,9 +249,9 @@ export default function CostTable() {
         <TableBody>
           {costRecordsAfterPagingAndSorting().map(costRecord => (
             <TableRow key={costRecord.id}>
-              <TableCell>{costRecord.costTitle}</TableCell>
-              <TableCell>{costRecord.quantity}</TableCell>
-              <TableCell>{costRecord.cost}</TableCell>
+              <TableCell>{costRecord.title}</TableCell>
+              <TableCell>{costRecord.description}</TableCell>
+              <TableCell>{costRecord.amount}</TableCell>
               <TableCell>{costRecord.date}</TableCell>
               <TableCell>
                 <ActionButton 

@@ -1,4 +1,5 @@
 import React from "react";
+import "./index.css"
 import Header from "./components/layouts/header";
 import {
   makeStyles,

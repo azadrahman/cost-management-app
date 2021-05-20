@@ -7,9 +7,9 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
 const initialCostFields = {
   id: 0,
-  costTitle: "",
-  quantity: 0,
-  cost: 0,
+  title: "",
+  description: "",
+  amount: 0,
   date: new Date()
 };
 
@@ -23,11 +23,11 @@ export default function CostForm(props) {
     if('title' in costFieldValues){
       temp.title = costFieldValues.title ? "" : "This field is required"
     }
-    if('quantity' in costFieldValues){
-      temp.quantity = costFieldValues.quantity ? "" : "Quantity is required"
+    if('description' in costFieldValues){
+      temp.description = costFieldValues.description ? "" : "Description is required"
     }
-    if('cost' in costFieldValues) {
-      temp.cost = costFieldValues.cost ? "" : "Amount is required"
+    if('amount' in costFieldValues) {
+      temp.amount = costFieldValues.amount ? "" : "Amount is required"
     }
     setErrors({
       ...temp
@@ -59,29 +59,29 @@ export default function CostForm(props) {
       <Grid container>
         <Grid item xs={6}>
           <Controls.Input
-            name="costTitle"
-            value={costFields.costTitle}
+            name="title"
+            value={costFields.title}
             label="Cost Title"
             onChange={handleCostInputChange}
-            error={errors.costTitle}
+            error={errors.title}
           />
           <Controls.Input
-            name="quantity"
-            value={costFields.quantity}
-            label="Quantity"
-            type="Number"
+            name="description"
+            value={costFields.description}
+            label="Description"
+            type="text"
             onChange={handleCostInputChange}
-            error={errors.quantity}
+            error={errors.description}
           />
         </Grid>
         <Grid item xs={6}>
           <Controls.Input
-            name="cost"
-            value={costFields.cost}
+            name="amount"
+            value={costFields.amount}
             label="Cost Amount"
             type="Number"
             onChange={handleCostInputChange}
-            error={errors.cost}
+            error={errors.amount}
           />
           <Controls.Input
             name="date"
@@ -89,7 +89,9 @@ export default function CostForm(props) {
             label="Cost Date"
             type="Date"
             onChange={handleCostInputChange}
-            error={errors.date}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
           <div style={{marginTop: '1rem'}}>
             <Controls.Button

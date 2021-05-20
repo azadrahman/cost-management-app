@@ -181,7 +181,6 @@ export default function UserTable() {
 
  // addUser to the server
  const addUser = async (userFields) => {
-   console.log(userFields)
    const req = {
      id: userFields.id,
      ...userFields

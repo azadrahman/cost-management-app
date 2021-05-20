@@ -37,7 +37,7 @@ export default function ProgressBar() {
     React.useEffect(() => {
         const timer = setInterval(() => {
             setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-        }, 800);
+        }, 300);
         return () => {
             clearInterval(timer);
         };

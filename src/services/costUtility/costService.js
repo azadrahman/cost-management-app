@@ -1,7 +1,7 @@
 export const costTableHead = [
-    { id: 'costTitle', label: 'Cost Title' },
-    { id: 'quantity', label: 'Quantity' },
-    { id: 'cost', label: 'Cost' },
+    { id: 'costTitle', label: 'Title' },
+    { id: 'quantity', label: 'Description' },
+    { id: 'cost', label: 'Amount' },
     { id: 'date', label: 'Entry Date' },
     { id: 'actions', label: 'Actions', disableSorting: true }
   ];
