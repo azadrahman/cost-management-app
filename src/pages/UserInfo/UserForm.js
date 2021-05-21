@@ -11,22 +11,7 @@ const initialFieldsValue = {
     email: "",
     phone: "",
     password: "",
-    // gender: "male",
-    // address: "",
-    // userType: ""
 };
-
-// const genderItems = [
-//     { id: "male", title: "Male" },
-//     { id: "female", title: "Female" },
-//     { id: "other", title: "Other" }
-// ];
-
-// const userTypeOptions = [
-//     { id: "1", title: "Beginner" },
-//     { id: "2", title: "Advance" },
-//     { id: "3", title: "Pro" }
-// ];
 
 export default function UserForm(props) {
     const { updateRecords, updateForEdit } = props
@@ -89,28 +74,8 @@ export default function UserForm(props) {
                         onChange={handleInputChange}
                         error={errors.email}
                     />
-                    {/* <Controls.Input
-                        name="address"
-                        value={fields.address}
-                        label="Address"
-                        onChange={handleInputChange}
-                    /> */}
                 </Grid>
                 <Grid item xs={6}>
-                    {/* <Controls.RadioGroup
-                        label="Gender"
-                        value={fields.gender}
-                        name="gender"
-                        onChange={handleInputChange}
-                        items={genderItems}
-                    />
-                    <Controls.SelectBox
-                        value={fields.userType}
-                        name="userType"
-                        label="User Type"
-                        onChange={handleInputChange}
-                        options={userTypeOptions}
-                    /> */}
                     <Controls.Input
                         name="phone"
                         value={fields.phone}

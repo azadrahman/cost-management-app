@@ -190,8 +190,8 @@ export default function UserTable() {
 
 // update users to the server
 const updateUser = async (data) => {
-    const res = await axios.patch(`${url}/${data.id}`, data)
-    const {id, name, email, phone, password} = res.data
+    const res = await axios.put(`${url}/${data.id}`, data)
+    const {id} = res.data
     setRecords(
       records.map(record => {
         return record.id === id ? {...res.data} : record

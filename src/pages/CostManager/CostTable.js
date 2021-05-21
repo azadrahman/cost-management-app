@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -26,6 +26,9 @@ import DeletePopup from "../../components/modals/DeletePopup";
 import CostForm from "./CostForm"
 import {Link} from "react-router-dom"
 import DateRange from "./DateRange"
+import axios from "axios"
+
+const url = 'http://35.222.145.11/costs'
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -75,7 +78,7 @@ export default function CostTable() {
   });
 
   // user data state
-  const [costRecords, setCostRecords] = useState(costUtility.getAllCosts());
+  const [costRecords, setCostRecords] = useState([]);
 
   // popup state
   const [openPopup, setOpenPopup] = useState(false);
@@ -148,10 +151,54 @@ export default function CostTable() {
     }
     return 0;
   }
+
+  // get costs for date range from api
+  const fetchCosts = async () => {
+    const res = await axios.get(`${url}/2021-05-01/2021-05-25`)
+    return res.data
+  }
+
+  useEffect(() => {
+    const getCosts  = async () => {
+      const allCosts = await fetchCosts()
+      setCostRecords(allCosts.data)
+    }
+    getCosts()
+  }, [])
+
+   // add cost to the server
+ const addCost = async (costFields) => {
+  const req = {
+    ...costFields
+  }
+  const res = await axios.post(url, req)
+  setCostRecords([...costRecords, res.data])
+}
+
+// update costs to the server
+const updateCost = async (data) => {
+   const res = await axios.put(`${url}/${data.id}`, data)
+   const {id} = res.data
+   setCostRecords(
+     costRecords.map(costRecord => {
+       return costRecord.id === id ? {...res.data} : costRecord
+     })
+   )
+}
+
+// delete cost from the server
+const deleteCost = async (id) => {
+   await axios.delete(`${url}/${id}`)
+   const newCostList = costRecords.filter(costList => {
+     return costList.id !== id
+   })
+   setCostRecords(newCostList)
+}
+
   // insertion and updating handle
   const costUpdateForEdit = (cost, costResetForm) => {
     if (cost.id === 0){
-      costUtility.addCost(cost)
+      addCost(cost)
       setNotify({
         isOpen: true,
         message: 'New cost entry added successfully',
@@ -159,17 +206,17 @@ export default function CostTable() {
     })
     }
     else {
-      costUtility.updateCost(cost)
+      updateCost(cost)
       setNotify({
         isOpen: true,
-        message: 'Entry updated successfully',
+        message: 'Cost Entry updated successfully',
         type: 'success'
     })
     }
     costResetForm()
     setUpdateCostRecords(null)
     setOpenPopup(false)
-    setCostRecords(costUtility.getAllCosts())
+    setCostRecords(costRecords)
   }
 
 
@@ -185,8 +232,7 @@ export default function CostTable() {
       ...confirmDialog,
       isOpen: false
     });
-    costUtility.deleteCost(id);
-    setCostRecords(costUtility.getAllCosts());
+    deleteCost(id);
     setNotify({
       isOpen: true,
       message: "Cost record deleted Successfully",
@@ -249,9 +295,9 @@ export default function CostTable() {
         <TableBody>
           {costRecordsAfterPagingAndSorting().map(costRecord => (
             <TableRow key={costRecord.id}>
-              <TableCell>{costRecord.title}</TableCell>
-              <TableCell>{costRecord.description}</TableCell>
-              <TableCell>{costRecord.amount}</TableCell>
+              <TableCell>{costRecord.Title}</TableCell>
+              <TableCell>{costRecord.Description}</TableCell>
+              <TableCell>{costRecord.Amount}</TableCell>
               <TableCell>{costRecord.date}</TableCell>
               <TableCell>
                 <ActionButton 

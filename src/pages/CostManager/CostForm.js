@@ -7,9 +7,10 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
 const initialCostFields = {
   id: 0,
-  title: "",
-  description: "",
-  amount: 0,
+  Title: "",
+  Description: "",
+  Amount: 0,
+  Payment_id: 1,
   date: new Date()
 };
 
@@ -20,14 +21,14 @@ export default function CostForm(props) {
   // form validation
   const costValidate = (costFieldValues = costFields) => {
     let temp = {...errors}
-    if('title' in costFieldValues){
-      temp.title = costFieldValues.title ? "" : "This field is required"
+    if('Title' in costFieldValues){
+      temp.Title = costFieldValues.Title ? "" : "Title is required"
     }
-    if('description' in costFieldValues){
-      temp.description = costFieldValues.description ? "" : "Description is required"
+    if('Description' in costFieldValues){
+      temp.Description = costFieldValues.Description ? "" : "Description is required"
     }
-    if('amount' in costFieldValues) {
-      temp.amount = costFieldValues.amount ? "" : "Amount is required"
+    if('Amount' in costFieldValues) {
+      temp.Amount = costFieldValues.Amount ? "" : "Amount is required"
     }
     setErrors({
       ...temp
@@ -59,29 +60,29 @@ export default function CostForm(props) {
       <Grid container>
         <Grid item xs={6}>
           <Controls.Input
-            name="title"
-            value={costFields.title}
+            name="Title"
+            value={costFields.Title}
             label="Cost Title"
             onChange={handleCostInputChange}
-            error={errors.title}
+            error={errors.Title}
           />
           <Controls.Input
-            name="description"
-            value={costFields.description}
+            name="Description"
+            value={costFields.Description}
             label="Description"
             type="text"
             onChange={handleCostInputChange}
-            error={errors.description}
+            error={errors.Description}
           />
         </Grid>
         <Grid item xs={6}>
           <Controls.Input
-            name="amount"
-            value={costFields.amount}
+            name="Amount"
+            value={costFields.Amount}
             label="Cost Amount"
             type="Number"
             onChange={handleCostInputChange}
-            error={errors.amount}
+            error={errors.Amount}
           />
           <Controls.Input
             name="date"

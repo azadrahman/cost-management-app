@@ -26,12 +26,14 @@ const UploadForm = () => {
 
     const [file, setFile] = useState('');
     const [filename, setFilename] = useState('Choose File');
+    const [uploadedFile, setUploadedFile] = useState({});
     const [notify, setNotify] = useState({
         isOpen: false,
         message: "",
         type: ""
     });
     const [uploadPercentage, setUploadPercentage] = useState(0);
+    const [success, setSuccess] = useState(false)
 
 
     const handleUploadChange = e => {
@@ -61,11 +63,16 @@ const UploadForm = () => {
             // Clear percentage
             setTimeout(() => setUploadPercentage(0), 10000);
 
+            const { destination, type } = res.data;
+
+            setUploadedFile({ destination, type });
+
             setNotify({
                 isOpen: true,
                 message: 'file uploaded successfully',
                 type: 'success'
             })
+            setSuccess(true)
         } catch (err) {
             if (err.response.status === 500) {
                 setNotify({
@@ -108,10 +115,18 @@ const UploadForm = () => {
                             />
                         </div>
                     </Grid>
-                    <ProgressBar percentage={uploadPercentage}/>
+                    <ProgressBar percentage={uploadPercentage} />
                 </Grid>
             </Form>
             <Notification notify={notify} setNotify={setNotify} />
+            {success ? (
+                <div style={{marginTop: '1.5rem', marginLeft: '0.6rem'}}>
+                    <div>
+                        <p style={{fontWeight: 'bold'}}>File uploaded path </p>
+                        <p style={{padding: '4px 12px', border: '1px solid grey', backgroundColor: 'white'}}>{`http://35.222.145.11/${uploadedFile.destination}`}</p>
+                    </div>
+                </div>
+            ) : null}
         </>
     );
 };
