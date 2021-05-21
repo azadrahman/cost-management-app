@@ -12,40 +12,29 @@ const useStyles = makeStyles({
 });
 
 
-function LinearProgressWithLabel(props) {
+function LinearProgressWithLabel({value}) {
     return (
         <Box display="flex" alignItems="center">
             <Box width="100%" mr={1}>
                 <LinearProgress
-                    style={{ color: '#003366' }}
+                    style={{ width: `${value}%` }}
                     variant="determinate"
-                    {...props} />
+                    {...value}
+                />
             </Box>
             <Box minWidth={35}>
-                <Typography variant="body2" color="textSecondary">{`${Math.round(
-                    props.value,
-                )}%`}</Typography>
+                <Typography variant="body2" color="textSecondary">{value}%</Typography>
             </Box>
         </Box>
     );
 }
 
-export default function ProgressBar() {
+export default function ProgressBar({percentage}) {
     const classes = useStyles();
-    const [progress, setProgress] = React.useState(10);
-
-    React.useEffect(() => {
-        const timer = setInterval(() => {
-            setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-        }, 300);
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
 
     return (
         <div className={classes.root}>
-            <LinearProgressWithLabel value={progress} />
+            <LinearProgressWithLabel value={percentage} />
         </div>
     );
 }

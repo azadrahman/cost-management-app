@@ -182,7 +182,6 @@ export default function UserTable() {
  // addUser to the server
  const addUser = async (userFields) => {
    const req = {
-     id: userFields.id,
      ...userFields
    }
    const res = await axios.post(url, req)
@@ -190,9 +189,15 @@ export default function UserTable() {
  }
 
 // update users to the server
-// const updateUser = (data) => {
-
-//  }
+const updateUser = async (data) => {
+    const res = await axios.patch(`${url}/${data.id}`, data)
+    const {id, name, email, phone, password} = res.data
+    setRecords(
+      records.map(record => {
+        return record.id === id ? {...res.data} : record
+      })
+    )
+ }
 
  // delete user from the server
  const deleteUser = async (id) => {
@@ -213,14 +218,14 @@ export default function UserTable() {
         type: 'success'
       })
     }
-    // else {
-    //   userUtility.updateUser(user)
-    //   setNotify({
-    //     isOpen: true,
-    //     message: 'Record Updated Successfully',
-    //     type: 'success'
-    //   })
-    //}
+    else {
+      updateUser(user)
+      setNotify({
+        isOpen: true,
+        message: 'Record Updated Successfully',
+        type: 'success'
+      })
+    }
     resetForm()
     setUpdateRecords(null)
     setOpenPopup(false)

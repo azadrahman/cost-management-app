@@ -4,6 +4,9 @@ import Controls from "../../components/controls/Controls";
 import { Form } from "../../components/layouts/useForm";
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ProgressBar from './ProgressBar';
+import Notification from "../../components/notifications/Notification";
+import axios from "axios"
+
 const useStyles = makeStyles({
     input: {
         backgroundColor: 'transparent',
@@ -23,17 +26,62 @@ const UploadForm = () => {
 
     const [file, setFile] = useState('');
     const [filename, setFilename] = useState('Choose File');
+    const [notify, setNotify] = useState({
+        isOpen: false,
+        message: "",
+        type: ""
+    });
+    const [uploadPercentage, setUploadPercentage] = useState(0);
+
 
     const handleUploadChange = e => {
         setFile(e.target.files[0]);
         setFilename(e.target.files[0].name);
     };
+    const uploadUrl = 'http://35.222.145.11/uploads'
 
     const handleUploadSubmit = async e => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('file', file);
-        console.log(filename)
+
+        try {
+            const res = await axios.post(uploadUrl, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: progressEvent => {
+                    setUploadPercentage(
+                        parseInt(
+                            Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                        )
+                    );
+                }
+            });
+            // Clear percentage
+            setTimeout(() => setUploadPercentage(0), 10000);
+
+            setNotify({
+                isOpen: true,
+                message: 'file uploaded successfully',
+                type: 'success'
+            })
+        } catch (err) {
+            if (err.response.status === 500) {
+                setNotify({
+                    isOpen: true,
+                    message: "There is a problem with the server",
+                    type: "error"
+                });
+            } else {
+                setNotify({
+                    isOpen: true,
+                    message: "Bad request try again!",
+                    type: "error"
+                });
+            }
+            setUploadPercentage(0)
+        }
     };
 
     return (
@@ -60,9 +108,10 @@ const UploadForm = () => {
                             />
                         </div>
                     </Grid>
-                    <ProgressBar />
+                    <ProgressBar percentage={uploadPercentage}/>
                 </Grid>
             </Form>
+            <Notification notify={notify} setNotify={setNotify} />
         </>
     );
 };
