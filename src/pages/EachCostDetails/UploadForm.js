@@ -3,7 +3,7 @@ import { Grid, makeStyles } from "@material-ui/core";
 import Controls from "../../components/controls/Controls";
 import { Form } from "../../components/layouts/useForm";
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import ProgressBar from './ProgressBar';
+import ProgressBar from '../../components/controls/ProgressBar';
 import Notification from "../../components/notifications/Notification";
 import axios from "axios"
 
@@ -18,6 +18,19 @@ const useStyles = makeStyles({
         "&:hover": {
             backgroundColor: '#001e3d'
         }
+    },
+    imgBox: {
+        padding: '8px 16px', 
+        border: '1px solid #e2e0d4', 
+        backgroundColor: 'white',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    image: {
+        width: '80px',
+        height: '80px',
+        objectFit: 'cover',
+        borderRadius: '50%'
     }
 })
 
@@ -121,10 +134,25 @@ const UploadForm = () => {
             <Notification notify={notify} setNotify={setNotify} />
             {success ? (
                 <div style={{marginTop: '1.5rem', marginLeft: '0.6rem'}}>
-                    <div>
-                        <p style={{fontWeight: 'bold'}}>File uploaded path </p>
-                        <p style={{padding: '4px 12px', border: '1px solid grey', backgroundColor: 'white'}}>{`http://35.222.145.11/${uploadedFile.destination}`}</p>
-                    </div>
+                    {uploadedFile.type == ('image/png' || 'image/jpeg') ?
+                    <div className={classes.imgBox}>
+                        <div>
+                            <img
+                                className={classes.image}
+                                src={`http://35.222.145.11/${uploadedFile.destination}`}
+                            />
+                        </div>
+                        <p style={{fontWeight: 'bold', marginLeft: '0.5rem', marginTop: '0.5rem' }}>{uploadedFile.destination.slice(19, 100)}</p>
+                    </div> : 
+                    <div className={classes.imgBox}>
+                        <div>
+                            <img
+                                className={classes.image}
+                                src="https://png.pngtree.com/png-vector/20190628/ourlarge/pngtree-file-icon-for-your-project-png-image_1521170.jpg" alt='file'
+                            />
+                        </div>
+                        <p style={{fontWeight: 'bold', marginLeft: '0.5rem', marginTop: '0.5rem' }}>{uploadedFile.destination.slice(19, uploadedFile.destination.length)}</p>
+                    </div> }
                 </div>
             ) : null}
         </>

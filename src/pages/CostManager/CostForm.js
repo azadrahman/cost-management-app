@@ -4,14 +4,14 @@ import Controls from "../../components/controls/Controls";
 import { useCostForm, Form } from "./useCostForm";
 import SaveIcon from '@material-ui/icons/Save';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { convertToyyyyMMdd } from "../../services/function"
 
 const initialCostFields = {
-  id: 0,
+  ID: 0,
   Title: "",
   Description: "",
   Amount: 0,
-  Payment_id: 1,
-  date: new Date()
+  date: convertToyyyyMMdd(new Date())
 };
 
 
@@ -20,7 +20,7 @@ export default function CostForm(props) {
 
   // form validation
   const costValidate = (costFieldValues = costFields) => {
-    let temp = {...errors}
+    let temp = {...costErrors}
     if('Title' in costFieldValues){
       temp.Title = costFieldValues.Title ? "" : "Title is required"
     }
@@ -30,7 +30,7 @@ export default function CostForm(props) {
     if('Amount' in costFieldValues) {
       temp.Amount = costFieldValues.Amount ? "" : "Amount is required"
     }
-    setErrors({
+    setCostErrors({
       ...temp
     })
     if(costFieldValues === costFields){
@@ -38,7 +38,7 @@ export default function CostForm(props) {
     }
   }
 
-  const { costFields, setCostFields, handleCostInputChange, errors, setErrors, costResetForm } = useCostForm(initialCostFields, true, costValidate);
+  const { costFields, setCostFields, handleCostInputChange, costErrors, setCostErrors, costResetForm } = useCostForm(initialCostFields, true, costValidate);
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -64,15 +64,14 @@ export default function CostForm(props) {
             value={costFields.Title}
             label="Cost Title"
             onChange={handleCostInputChange}
-            error={errors.Title}
+            error={costErrors.Title}
           />
           <Controls.Input
             name="Description"
             value={costFields.Description}
             label="Description"
-            type="text"
             onChange={handleCostInputChange}
-            error={errors.Description}
+            error={costErrors.Description}
           />
         </Grid>
         <Grid item xs={6}>
@@ -80,15 +79,15 @@ export default function CostForm(props) {
             name="Amount"
             value={costFields.Amount}
             label="Cost Amount"
-            type="Number"
+            type="number"
             onChange={handleCostInputChange}
-            error={errors.Amount}
+            error={costErrors.Amount}
           />
           <Controls.Input
             name="date"
-            value={costFields.date}
+            value={costFields.date || ''}
             label="Cost Date"
-            type="Date"
+            type="date"
             onChange={handleCostInputChange}
             InputLabelProps={{
               shrink: true,

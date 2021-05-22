@@ -19,7 +19,7 @@ function LinearProgressWithLabel({value}) {
                 <LinearProgress
                     style={{ width: `${value}%` }}
                     variant="determinate"
-                    {...value}
+                    value={value}
                 />
             </Box>
             <Box minWidth={35}>

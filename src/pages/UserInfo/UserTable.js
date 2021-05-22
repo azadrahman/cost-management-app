@@ -11,7 +11,7 @@ import {
   Toolbar,
   InputAdornment
 } from "@material-ui/core";
-import tableHead from "../../services/tableHeadData";
+import { userTableHead } from "../../services/tableHeadData";
 import ActionButton from "../../components/controls/ActionButton";
 import Controls from "../../components/controls/Controls";
 import Popup from "../../components/modals/Popup";
@@ -289,7 +289,7 @@ const updateUser = async (data) => {
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            {tableHead.map(theadTitle => (
+            {userTableHead.map(theadTitle => (
               <TableCell
                 key={theadTitle.id}
                 sortDirection={orderBy === theadTitle.id ? order : false}

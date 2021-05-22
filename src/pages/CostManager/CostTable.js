@@ -11,8 +11,7 @@ import {
   Toolbar,
 } from "@material-ui/core";
 
-import {costTableHead} from "../../services/costUtility/costService";
-import * as costUtility from "../../services/costUtility/costService";
+import { costTableHead } from "../../services/tableHeadData";
 import ActionButton from "../../components/controls/ActionButton";
 import Controls from "../../components/controls/Controls";
 import Popup from "../../components/modals/Popup";
@@ -177,11 +176,11 @@ export default function CostTable() {
 
 // update costs to the server
 const updateCost = async (data) => {
-   const res = await axios.put(`${url}/${data.id}`, data)
+   const res = await axios.patch(`${url}/${data.ID}`, data)
    const {id} = res.data
    setCostRecords(
      costRecords.map(costRecord => {
-       return costRecord.id === id ? {...res.data} : costRecord
+       return costRecord.ID === id ? {...res.data} : costRecord
      })
    )
 }
@@ -190,7 +189,7 @@ const updateCost = async (data) => {
 const deleteCost = async (id) => {
    await axios.delete(`${url}/${id}`)
    const newCostList = costRecords.filter(costList => {
-     return costList.id !== id
+     return costList.ID !== id
    })
    setCostRecords(newCostList)
 }
@@ -294,7 +293,7 @@ const deleteCost = async (id) => {
         </TableHead>
         <TableBody>
           {costRecordsAfterPagingAndSorting().map(costRecord => (
-            <TableRow key={costRecord.id}>
+            <TableRow key={costRecord.ID}>
               <TableCell>{costRecord.Title}</TableCell>
               <TableCell>{costRecord.Description}</TableCell>
               <TableCell>{costRecord.Amount}</TableCell>
@@ -303,7 +302,7 @@ const deleteCost = async (id) => {
                 <ActionButton 
                   color="default"
                 >
-                <Link to={`/costs/${costRecord.id}`}>
+                <Link to={`/costs/${costRecord.ID}`}>
                   <VisibilityIcon fontSize="small" />
                 </Link>
                 </ActionButton>
@@ -321,7 +320,7 @@ const deleteCost = async (id) => {
                       title: "Are you sure?",
                       subTitle: "Do you really want to delete this record?",
                       onConfirm: () => {
-                        onDelete(costRecord.id);
+                        onDelete(costRecord.ID);
                       }
                     });
                   }}

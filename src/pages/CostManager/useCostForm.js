@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core";
 
 export function useCostForm(initialCostFields, validateOnChange = false, costValidate) {
   const [costFields, setCostFields] = useState(initialCostFields);
-  const [errors, setErrors] = useState({});
+  const [costErrors, setCostErrors] = useState({});
 
   const handleCostInputChange = e => {
     const { name, value } = e.target;
@@ -18,15 +18,15 @@ export function useCostForm(initialCostFields, validateOnChange = false, costVal
 
   const costResetForm = () => {
     setCostFields(initialCostFields)
-    setErrors({})
+    setCostErrors({})
   }
 
   return {
     costFields,
     setCostFields,
     handleCostInputChange,
-    errors,
-    setErrors,
+    costErrors,
+    setCostErrors,
     costResetForm,
   };
 }
@@ -45,7 +45,7 @@ export function Form(props) {
   const {children, ...other} = props
   return (
     <form className={classes.root} autoComplete="off" {...other}>
-      {props.children}
+      {children}
     </form>
   );
 }
