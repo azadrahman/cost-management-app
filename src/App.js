@@ -1,12 +1,19 @@
 import React from "react";
+import "./index.css"
 import Header from "./components/layouts/header";
-import UsersInfo from "./pages/UserInfo/Users";
 import {
   makeStyles,
   createMuiTheme,
   ThemeProvider,
   CssBaseline
 } from "@material-ui/core";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Home from "./pages/HomeView/Home"
+import UsersInfo from "./pages/UserInfo/Users"
+import CostsView from "./pages/CostManager/CostsView"
+import Error from "./pages/Error"
+import SideMenu from "./components/layouts/SideMenu"
+import EachCostDetail from "./pages/EachCostDetails/eachCostDetail"
 
 const theme = createMuiTheme({
   palette: {
@@ -38,21 +45,32 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles({
   appMain: {
-    paddingLeft: "0px",
+    paddingLeft: "220px",
     width: "100%"
-  }
+  },
 });
 
 export default function App() {
   const classes = useStyles();
 
   return (
+    <React.Fragment>
+    <Router>
     <ThemeProvider theme={theme}>
+      <SideMenu />
       <div className={classes.appMain}>
         <Header />
-        <UsersInfo />
+        <Switch>
+          <Route path="/" component={Home} exact />
+          <Route exact path="/costs/:id" component={EachCostDetail} />
+          <Route path="/users" component={UsersInfo} />
+          <Route path="/costs" component={CostsView} />
+          <Route component={Error} />
+        </Switch>
       </div>
       <CssBaseline />
     </ThemeProvider>
+    </Router>
+    </React.Fragment>
   );
 }

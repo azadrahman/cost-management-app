@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   makeStyles,
   AppBar,
@@ -10,9 +10,9 @@ import {
   FormGroup,
   MenuItem,
   Menu
-} from "@material-ui/core";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MenuIcon from "@material-ui/icons/Menu";
+} from '@material-ui/core';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,6 +31,7 @@ export default function Header() {
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  //const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const handleChange = event => {
     setAuth(event.target.checked);
@@ -44,6 +45,10 @@ export default function Header() {
     setAnchorEl(null);
   };
 
+  // const handleToggle = () => {
+  //   setIsMenuOpen(!isMenuOpen);
+  // };
+
   return (
     <div className={classes.root}>
       <FormGroup>
@@ -55,21 +60,22 @@ export default function Header() {
               aria-label="login switch"
             />
           }
-          label={auth ? "Logout" : "Login"}
+          label={auth ? 'Logout' : 'Login'}
         />
       </FormGroup>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
+          {/* <IconButton
             edge="start"
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
+            onClick={handleToggle}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography variant="h6" className={classes.title}>
-            Menu
+            CostTracker
           </Typography>
           {auth && (
             <div>
@@ -86,13 +92,13 @@ export default function Header() {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
+                  vertical: 'top',
+                  horizontal: 'right'
                 }}
                 keepMounted
                 transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
+                  vertical: 'top',
+                  horizontal: 'right'
                 }}
                 open={open}
                 onClose={handleClose}
@@ -100,6 +106,7 @@ export default function Header() {
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
               </Menu>
+              {/* {isMenuOpen && <SideMenu />} */}
             </div>
           )}
         </Toolbar>

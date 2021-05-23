@@ -1,8 +1,15 @@
-const tableHead = [
-  { id: "fullname", label: "Name" },
+export const userTableHead = [
+  { id: "name", label: "Name" },
   { id: "email", label: "Email" },
-  { id: "mobile", label: "Mobile No" },
+  { id: "phone", label: "Mobile No" },
   { id: 'actions', label: 'Actions', disableSorting: true }
 ];
 
-export default tableHead;
+export const costTableHead = [
+  { id: 'Title', label: 'Title' },
+  { id: 'Description', label: 'Description' },
+  { id: 'Amount', label: 'Amount' },
+  { id: 'Date', label: 'Entry Date' },
+  { id: 'actions', label: 'Actions', disableSorting: true }
+];
+

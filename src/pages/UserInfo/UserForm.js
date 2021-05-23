@@ -7,25 +7,11 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
 const initialFieldsValue = {
     id: 0,
-    fullname: "",
+    name: "",
     email: "",
-    mobile: "",
-    gender: "male",
-    address: "",
-    userType: ""
+    phone: "",
+    password: "",
 };
-
-const genderItems = [
-    { id: "male", title: "Male" },
-    { id: "female", title: "Female" },
-    { id: "other", title: "Other" }
-];
-
-const userTypeOptions = [
-    { id: "1", title: "Beginner" },
-    { id: "2", title: "Advance" },
-    { id: "3", title: "Pro" }
-];
 
 export default function UserForm(props) {
     const { updateRecords, updateForEdit } = props
@@ -33,14 +19,17 @@ export default function UserForm(props) {
     // form validation
     const validate = (fieldValues = fields) => {
         let temp = { ...errors }
-        if ('fullname' in fieldValues) {
-            temp.fullname = fieldValues.fullname ? "" : "This field is required"
+        if ('name' in fieldValues) {
+            temp.name = fieldValues.name ? "" : "This field is required"
         }
         if ('email' in fieldValues) {
             temp.email = (/$^|.+@.+..+/).test(fieldValues.email) ? "" : "Email format is not valid"
         }
-        if ('mobile' in fieldValues) {
-            temp.mobile = fieldValues.mobile.length === 11 ? "" : "Number must be 11 digits"
+        if ('phone' in fieldValues) {
+            temp.phone = fieldValues.phone.length === 11 ? "" : "Number must be 11 digits"
+        }
+        if ('password' in fieldValues) {
+            temp.password = fieldValues.password.length >= 8 ? "" : "Maximum 8 character required"
         }
         setErrors({
             ...temp
@@ -72,11 +61,11 @@ export default function UserForm(props) {
             <Grid container>
                 <Grid item xs={6}>
                     <Controls.Input
-                        name="fullname"
-                        value={fields.fullname}
+                        name="name"
+                        value={fields.name}
                         label="Full Name"
                         onChange={handleInputChange}
-                        error={errors.fullname}
+                        error={errors.name}
                     />
                     <Controls.Input
                         name="email"
@@ -85,34 +74,22 @@ export default function UserForm(props) {
                         onChange={handleInputChange}
                         error={errors.email}
                     />
-                    <Controls.Input
-                        name="mobile"
-                        value={fields.mobile}
-                        label="Mobile No"
-                        onChange={handleInputChange}
-                        error={errors.mobile}
-                    />
-                    <Controls.Input
-                        name="address"
-                        value={fields.address}
-                        label="Address"
-                        onChange={handleInputChange}
-                    />
                 </Grid>
                 <Grid item xs={6}>
-                    <Controls.RadioGroup
-                        label="Gender"
-                        value={fields.gender}
-                        name="gender"
+                    <Controls.Input
+                        name="phone"
+                        value={fields.phone}
+                        label="Mobile No"
                         onChange={handleInputChange}
-                        items={genderItems}
+                        error={errors.phone}
                     />
-                    <Controls.SelectBox
-                        value={fields.userType}
-                        name="userType"
-                        label="User Type"
+                    <Controls.Input
+                        name="password"
+                        value={fields.password}
+                        label="Password"
+                        type="password"
                         onChange={handleInputChange}
-                        options={userTypeOptions}
+                        error={errors.password}
                     />
                     <div style={{ marginTop: '1rem' }}>
                         <Controls.Button

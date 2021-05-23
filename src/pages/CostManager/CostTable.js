@@ -9,20 +9,26 @@ import {
   TablePagination,
   TableSortLabel,
   Toolbar,
-  InputAdornment
 } from "@material-ui/core";
-import { userTableHead } from "../../services/tableHeadData";
+
+import { costTableHead } from "../../services/tableHeadData";
 import ActionButton from "../../components/controls/ActionButton";
 import Controls from "../../components/controls/Controls";
 import Popup from "../../components/modals/Popup";
-import SearchIcon from "@material-ui/icons/Search";
 import AddIcon from "@material-ui/icons/Add";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import DeleteIcon from "@material-ui/icons/Delete";
+import SearchIcon from "@material-ui/icons/Search";
 import Notification from "../../components/notifications/Notification";
 import DeletePopup from "../../components/modals/DeletePopup";
-import UserForm from "./UserForm"
+import CostForm from "./CostForm"
+import {Link} from "react-router-dom"
+import DateRange from "./DateRange"
 import axios from "axios"
+import {convertToyyyyMMdd} from "../../services/function"
+
+const url = 'http://35.222.145.11/costs'
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -36,14 +42,15 @@ const useStyles = makeStyles(theme => ({
       fontWeight: "400"
     },
     "& tbody tr:hover": {
-      backgroundColor: "#ddd",
+      backgroundColor: "#d9d9d9",
       cursor: "pointer"
     }
   },
   searchInput: {
-    marginBottom: "0.8rem",
-    width: "70%",
-    color: "#000",
+    marginBottom: "0.3rem",
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
   },
   btnStyle: {
     position: "absolute",
@@ -53,9 +60,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const url = 'http://35.222.145.11/users'
-
-export default function UserTable() {
+export default function CostTable() {
   const classes = useStyles();
 
   // notification state
@@ -73,14 +78,7 @@ export default function UserTable() {
   });
 
   // user data state
-  const [records, setRecords] = useState([]);
-
-  // search filter state
-  const [searchItem, setSearchItem] = useState({
-    fn: items => {
-      return items;
-    }
-  });
+  const [costRecords, setCostRecords] = useState([]);
 
   // popup state
   const [openPopup, setOpenPopup] = useState(false);
@@ -95,21 +93,11 @@ export default function UserTable() {
   const [orderBy, setOrderBy] = useState();
 
   // update records state 
-  const [updateRecords, setUpdateRecords] = useState(null)
+  const [updateCostRecords, setUpdateCostRecords] = useState(null)
 
-  // get all users from api
-  const fetchUsers = async () => {
-    const res = await axios.get(url)
-    return res.data
-  }
-
-  useEffect(() => {
-    const getUsers  = async () => {
-      const allUsers = await fetchUsers()
-      setRecords(allUsers.data)
-    }
-    getUsers()
-  }, [])
+  // start date and end date state variable
+  const [startValue, setStartValue] = useState("2021-04-01")
+  const [endValue, setEndValue] = useState("2021-06-25")
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -126,19 +114,11 @@ export default function UserTable() {
     setOrderBy(cellId);
   };
 
-  const handleSearch = e => {
-    let target = e.target;
-    setSearchItem({
-      fn: items => {
-        if (target.value === "") return items;
-        else {
-          return items.filter(
-            x =>
-              x.name.toLowerCase().indexOf(target.value.toLowerCase()) >= 0
-          );
-        }
-      }
-    });
+  // select date range to filter const data
+  const handleFilter = (RangeEventArgs) => {
+     fetchCosts()
+     setStartValue(convertToyyyyMMdd(RangeEventArgs.startDate))
+     setEndValue(convertToyyyyMMdd(RangeEventArgs.endDate))
   };
 
   const TblPagination = () => (
@@ -147,7 +127,7 @@ export default function UserTable() {
       page={page}
       rowsPerPageOptions={pages}
       rowsPerPage={rowsPerPage}
-      count={records.length}
+      count={costRecords.length}
       onChangePage={handleChangePage}
       onChangeRowsPerPage={handleChangeRowsPerPage}
     />
@@ -177,64 +157,91 @@ export default function UserTable() {
     }
     return 0;
   }
+  
 
-
- // addUser to the server
- const addUser = async (userFields) => {
-   const req = {
-     ...userFields
-   }
-   const res = await axios.post(url, req)
-   setRecords([...records, res.data])
- }
-
-// update users to the server
-const updateUser = async (data) => {
-    const res = await axios.put(`${url}/${data.id}`, data)
-    const {id} = res.data
-    setRecords(
-      records.map(record => {
-        return record.id === id ? {...res.data} : record
-      })
-    )
- }
-
- // delete user from the server
- const deleteUser = async (id) => {
-    await axios.delete(`${url}/${id}`)
-    const newUserList = records.filter(list => {
-      return list.id !== id
-    })
-    setRecords(newUserList)
- }
-
-  // insertion and updating handle
-  const updateForEdit = (user, resetForm) => {
-    if (user.id === 0) {
-      addUser(user)
-      setNotify({
-        isOpen: true,
-        message: 'New user added successfully',
-        type: 'success'
-      })
-    }
-    else {
-      updateUser(user)
-      setNotify({
-        isOpen: true,
-        message: 'Record Updated Successfully',
-        type: 'success'
-      })
-    }
-    resetForm()
-    setUpdateRecords(null)
-    setOpenPopup(false)
-    setRecords(records)
+  // get costs for date range from api
+  const fetchCosts = async () => {
+    const res = await axios.get(`${url}?from=${startValue}&to=${endValue}`)
+    const allData = await res.data
+    setCostRecords(allData.data)
   }
 
-  // update records for edit handle
-  const updateHandle = (record) => {
-    setUpdateRecords(record)
+  const fetchCostsInitial = async () => {
+    const res = await axios.get(`${url}?from=${startValue}&to=${endValue}`)
+    const allData = await res.data
+    return allData
+  }
+
+  useEffect(() => {
+    const getCosts  = async () => {
+      const allCosts = await fetchCostsInitial()
+      setCostRecords(allCosts.data)
+    }
+    getCosts()
+  }, [])
+
+   // add cost to the server
+ const addCost = async (costFields) => {
+  const req = {
+    ...costFields,
+    Amount: Number.parseFloat(costFields.Amount), 
+  }
+  const res = await axios.post(url, req)
+  setCostRecords([...costRecords, res.data])
+}
+
+// update costs to the server
+const updateCost = async (data) => {
+  const req = {
+    ...data,
+    Amount: Number.parseFloat(data.Amount), 
+  }
+   const res = await axios.put(`${url}/${data.ID}`, req)
+   const {id} = res.data
+   setCostRecords(
+     costRecords.map(costRecord => {
+       return costRecord.ID === id ? {...res.data} : costRecord
+     })
+   )
+}
+
+// delete cost from the server
+const deleteCost = async (id) => {
+   await axios.delete(`${url}/${id}`)
+   const newCostList = costRecords.filter(costList => {
+     return costList.ID !== id
+   })
+   setCostRecords(newCostList)
+}
+
+  // insertion and updating handle
+  const costUpdateForEdit = (cost, costResetForm) => {
+    if (cost.ID === 0){
+      addCost(cost)
+      setNotify({
+        isOpen: true,
+        message: 'New cost entry added successfully',
+        type: 'success'
+    })
+    }
+    else {
+      updateCost(cost)
+      setNotify({
+        isOpen: true,
+        message: 'Cost Entry updated successfully',
+        type: 'success'
+    })
+    }
+    costResetForm()
+    setUpdateCostRecords(null)
+    setOpenPopup(false)
+    setCostRecords(costRecords)
+  }
+
+
+  // update cost records for edit handle
+  const costUpdateHandle = record =>{
+    setUpdateCostRecords(record)
     setOpenPopup(true)
   }
 
@@ -244,17 +251,17 @@ const updateUser = async (data) => {
       ...confirmDialog,
       isOpen: false
     });
-    deleteUser(id);
+    deleteCost(id);
     setNotify({
       isOpen: true,
-      message: "Deleted Successfully",
+      message: "Cost record deleted Successfully",
       type: "error"
     });
   };
 
   // render pagging, sorting and search filtering
-  const recordsAfterPagingAndSorting = () => {
-    return SortFn(searchItem.fn(records), getComparator(order, orderBy)).slice(
+  const costRecordsAfterPagingAndSorting = () => {
+    return SortFn(costRecords, getComparator(order, orderBy)).slice(
       page * rowsPerPage,
       (page + 1) * rowsPerPage
     );
@@ -263,21 +270,16 @@ const updateUser = async (data) => {
   return (
     <>
       <Toolbar>
-        <Controls.Input
-          label="Search User"
-          variant="standard"
-          className={classes.searchInput}
-          onChange={handleSearch}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            )
-          }}
-        />
+        <div className={classes.searchInput}>
+          <SearchIcon style={{marginRight:'0.4rem'}}/>
+          <DateRange
+            startValue={startValue}
+            endValue={endValue}
+            onChange={handleFilter}
+          />
+        </div>
         <Controls.Button
-          text="Add User"
+          text="Add Cost"
           variant="outlined"
           startIcon={<AddIcon />}
           className={classes.btnStyle}
@@ -289,22 +291,22 @@ const updateUser = async (data) => {
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
-            {userTableHead.map(theadTitle => (
+            {costTableHead.map(costThead => (
               <TableCell
-                key={theadTitle.id}
-                sortDirection={orderBy === theadTitle.id ? order : false}
+                key={costThead.id}
+                sortDirection={orderBy === costThead.id ? order : false}
               >
-                {theadTitle.disableSorting ? (
-                  theadTitle.label
+                {costThead.disableSorting ? (
+                  costThead.label
                 ) : (
                   <TableSortLabel
-                    active={orderBy === theadTitle.id}
-                    direction={orderBy === theadTitle.id ? order : "asc"}
+                    active={orderBy === costThead.id}
+                    direction={orderBy === costThead.id ? order : "asc"}
                     onClick={() => {
-                      handleSortRequest(theadTitle.id);
+                      handleSortRequest(costThead.id);
                     }}
                   >
-                    {theadTitle.label}
+                    {costThead.label}
                   </TableSortLabel>
                 )}
               </TableCell>
@@ -312,15 +314,23 @@ const updateUser = async (data) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {recordsAfterPagingAndSorting().map(record => (
-            <TableRow key={record.id}>
-              <TableCell>{record.name}</TableCell>
-              <TableCell>{record.email}</TableCell>
-              <TableCell>{record.phone}</TableCell>
+          {costRecordsAfterPagingAndSorting().map(costRecord => (
+            <TableRow key={costRecord.ID}>
+              <TableCell>{costRecord.Title}</TableCell>
+              <TableCell>{costRecord.Description}</TableCell>
+              <TableCell>{costRecord.Amount}</TableCell>
+              <TableCell>{convertToyyyyMMdd(costRecord.Date)}</TableCell>
               <TableCell>
-                <ActionButton
+                <ActionButton 
+                  color="default"
+                >
+                <Link to={`/costs/${costRecord.ID}`}>
+                  <VisibilityIcon fontSize="small" />
+                </Link>
+                </ActionButton>
+                <ActionButton 
                   color="primary"
-                  onClick={() => updateHandle(record)}
+                  onClick={() => costUpdateHandle(costRecord)}
                 >
                   <EditOutlinedIcon fontSize="small" />
                 </ActionButton>
@@ -332,7 +342,7 @@ const updateUser = async (data) => {
                       title: "Are you sure?",
                       subTitle: "Do you really want to delete this record?",
                       onConfirm: () => {
-                        onDelete(record.id);
+                        onDelete(costRecord.ID);
                       }
                     });
                   }}
@@ -346,14 +356,14 @@ const updateUser = async (data) => {
       </Table>
       <TblPagination />
       <Popup
-        title="User Form"
+        title="Cost Entry"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <UserForm
-          updateForEdit={updateForEdit}
-          updateRecords={updateRecords}
-        />
+       <CostForm 
+        costUpdateForEdit={costUpdateForEdit}
+        updateCostRecords={updateCostRecords}
+       />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <DeletePopup
