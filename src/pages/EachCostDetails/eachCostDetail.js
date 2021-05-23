@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, Table, TableHead, TableBody, TableRow, TableCell } from "@material-ui/core";
 import Controls from "../../components/controls/Controls"
 import Popup from "../../components/modals/Popup";
 import UploadForm from "./UploadForm"
-import {Link} from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
+import axios from "axios"
+import { convertToyyyyMMdd } from "../../services/function"
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -38,7 +40,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     link: {
-        "&:hover":{
+        "&:hover": {
             color: '#ff5719',
             textDecoration: 'none',
         }
@@ -64,67 +66,85 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const thTitle = [
-    { id: 'title', label: 'Cost title' },
-    { id: 'quantity', label: 'Quantity' },
-    { id: 'cost', label: 'Cost' },
+    { id: 'title', label: 'Title' },
+    { id: 'description', label: 'Description' },
+    { id: 'amount', label: 'Cost Amount' },
     { id: 'date', label: 'Entry Date' },
     { id: 'total', label: 'Total' }
 ]
 
-const costRecords = [
-    { id: 0, costTitle: 'Gas bill', quantity: 2, cost: 500, date: '09-May-2021', total: 500 },
-    { id: 1, costTitle: 'Gas bill', quantity: 2, cost: 500, date: '09-May-2021', total: 500 },
-]
 
 export default function EachCostDetail() {
-    const [openUpload, setOpenUpload] = useState(false)
     const classes = useStyles();
+
+    const { id } = useParams()
+    const url = `http://35.222.145.11/costs/${id}`
+
+    const [openUpload, setOpenUpload] = useState(false)
+    const [lists, setLists] = useState([])
+
+    // get each cost id records from api
+    const fetchCostRecords = async () => {
+        const res = await axios.get(url)
+        return res.data
+    }
+
+    useEffect(() => {
+        const getCostRecords = async () => {
+            const allCostList = await fetchCostRecords()
+            setLists(allCostList.data)
+        }
+        getCostRecords()
+    }, [])
 
     const handleUploadPopup = () => {
         setOpenUpload(!openUpload)
     }
-    return (
-        <div className={classes.root}>
-            <h3 className={classes.title}>Cost details</h3>
-            <button className={classes.btn}>
-                <Link className={classes.link} to="/costs" >Back to cost table</Link>
-            </button>
-            <Table className={classes.table}>
-                <TableHead className={classes.headStyle}>
-                    <TableRow>
-                        {thTitle.map(thead => (
-                            <TableCell
-                                key={thead.id}
-                            >
-                                {thead.label}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {costRecords.map(costRecord => (
-                        <TableRow key={costRecord.id}>
-                            <TableCell>{costRecord.costTitle}</TableCell>
-                            <TableCell>{costRecord.quantity}</TableCell>
-                            <TableCell>{costRecord.cost}</TableCell>
-                            <TableCell>{costRecord.date}</TableCell>
-                            <TableCell>{costRecord.total} </TableCell>
+
+    if (lists) {
+        return (
+            <div className={classes.root}>
+                <h3 className={classes.title}>Cost details</h3>
+                <button className={classes.btn}>
+                    <Link className={classes.link} to="/costs" >Back to cost table</Link>
+                </button>
+                <Table className={classes.table}>
+                    <TableHead className={classes.headStyle}>
+                        <TableRow>
+                            {thTitle.map(thead => (
+                                <TableCell
+                                    key={thead.id}
+                                >
+                                    {thead.label}
+                                </TableCell>
+                            ))}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <Controls.Button
-                className={classes.uploadBtn}
-                text="Upload Attachment"
-                onClick={handleUploadPopup}
-            />
-            <Popup
-                title="File Upload"
-                openPopup={openUpload}
-                setOpenPopup={setOpenUpload}
-            >
-                <UploadForm />
-            </Popup>
-        </div>
-    );
+                    </TableHead>
+                    <TableBody>
+                        <TableRow key={lists.ID}>
+                            <TableCell>{lists.Title}</TableCell>
+                            <TableCell>{lists.Description}</TableCell>
+                            <TableCell>{lists.Amount}</TableCell>
+                            <TableCell>{convertToyyyyMMdd(lists.Date)}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+                <Controls.Button
+                    className={classes.uploadBtn}
+                    text="Upload Attachment"
+                    onClick={handleUploadPopup}
+                />
+                <Popup
+                    title="File Upload"
+                    openPopup={openUpload}
+                    setOpenPopup={setOpenUpload}
+                >
+                    <UploadForm />
+                </Popup>
+            </div>
+        );
+    }
+    return (
+        <div></div>
+    )
 }

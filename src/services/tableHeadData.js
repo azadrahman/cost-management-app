@@ -9,7 +9,7 @@ export const costTableHead = [
   { id: 'Title', label: 'Title' },
   { id: 'Description', label: 'Description' },
   { id: 'Amount', label: 'Amount' },
-  { id: 'date', label: 'Entry Date' },
+  { id: 'Date', label: 'Entry Date' },
   { id: 'actions', label: 'Actions', disableSorting: true }
 ];
 

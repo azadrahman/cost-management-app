@@ -11,7 +11,7 @@ const initialCostFields = {
   Title: "",
   Description: "",
   Amount: 0,
-  date: convertToyyyyMMdd(new Date())
+  Date: convertToyyyyMMdd(new Date())
 };
 
 
@@ -84,8 +84,8 @@ export default function CostForm(props) {
             error={costErrors.Amount}
           />
           <Controls.Input
-            name="date"
-            value={costFields.date || ''}
+            name="Date"
+            value={costFields.Date || ''}
             label="Cost Date"
             type="date"
             onChange={handleCostInputChange}

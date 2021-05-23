@@ -8,7 +8,8 @@ const useStyle = makeStyles({
   }
 })
 
-export default function DateRange() {
+export default function DateRange(props) {
+  const {startValue, endValue, onChange} = props
   const classes = useStyle()
 
   return (
@@ -17,6 +18,9 @@ export default function DateRange() {
         placeholder="Start date - End date"
         separator='to'
         format="dd-MMM-yy"
+        startDate={startValue}
+        endDate={endValue}
+        change={onChange}
       />
     </div>
   )

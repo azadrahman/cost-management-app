@@ -54,6 +54,7 @@ export default function App() {
   const classes = useStyles();
 
   return (
+    <React.Fragment>
     <Router>
     <ThemeProvider theme={theme}>
       <SideMenu />
@@ -70,5 +71,6 @@ export default function App() {
       <CssBaseline />
     </ThemeProvider>
     </Router>
+    </React.Fragment>
   );
 }

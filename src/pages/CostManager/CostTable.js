@@ -26,6 +26,7 @@ import CostForm from "./CostForm"
 import {Link} from "react-router-dom"
 import DateRange from "./DateRange"
 import axios from "axios"
+import {convertToyyyyMMdd} from "../../services/function"
 
 const url = 'http://35.222.145.11/costs'
 
@@ -94,6 +95,10 @@ export default function CostTable() {
   // update records state 
   const [updateCostRecords, setUpdateCostRecords] = useState(null)
 
+  // start date and end date state variable
+  const [startValue, setStartValue] = useState("2021-04-01")
+  const [endValue, setEndValue] = useState("2021-06-25")
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -109,10 +114,12 @@ export default function CostTable() {
     setOrderBy(cellId);
   };
 
-  // select date range handle
-  // const handleSearch = e => {
-  //   let target = e.target;
-  // };
+  // select date range to filter const data
+  const handleFilter = (RangeEventArgs) => {
+     fetchCosts()
+     setStartValue(convertToyyyyMMdd(RangeEventArgs.startDate))
+     setEndValue(convertToyyyyMMdd(RangeEventArgs.endDate))
+  };
 
   const TblPagination = () => (
     <TablePagination
@@ -150,16 +157,24 @@ export default function CostTable() {
     }
     return 0;
   }
+  
 
   // get costs for date range from api
   const fetchCosts = async () => {
-    const res = await axios.get(`${url}/2021-05-01/2021-05-25`)
-    return res.data
+    const res = await axios.get(`${url}?from=${startValue}&to=${endValue}`)
+    const allData = await res.data
+    setCostRecords(allData.data)
+  }
+
+  const fetchCostsInitial = async () => {
+    const res = await axios.get(`${url}?from=${startValue}&to=${endValue}`)
+    const allData = await res.data
+    return allData
   }
 
   useEffect(() => {
     const getCosts  = async () => {
-      const allCosts = await fetchCosts()
+      const allCosts = await fetchCostsInitial()
       setCostRecords(allCosts.data)
     }
     getCosts()
@@ -168,7 +183,8 @@ export default function CostTable() {
    // add cost to the server
  const addCost = async (costFields) => {
   const req = {
-    ...costFields
+    ...costFields,
+    Amount: Number.parseFloat(costFields.Amount), 
   }
   const res = await axios.post(url, req)
   setCostRecords([...costRecords, res.data])
@@ -176,7 +192,11 @@ export default function CostTable() {
 
 // update costs to the server
 const updateCost = async (data) => {
-   const res = await axios.patch(`${url}/${data.ID}`, data)
+  const req = {
+    ...data,
+    Amount: Number.parseFloat(data.Amount), 
+  }
+   const res = await axios.put(`${url}/${data.ID}`, req)
    const {id} = res.data
    setCostRecords(
      costRecords.map(costRecord => {
@@ -196,7 +216,7 @@ const deleteCost = async (id) => {
 
   // insertion and updating handle
   const costUpdateForEdit = (cost, costResetForm) => {
-    if (cost.id === 0){
+    if (cost.ID === 0){
       addCost(cost)
       setNotify({
         isOpen: true,
@@ -220,7 +240,7 @@ const deleteCost = async (id) => {
 
 
   // update cost records for edit handle
-  const updateHandle = record =>{
+  const costUpdateHandle = record =>{
     setUpdateCostRecords(record)
     setOpenPopup(true)
   }
@@ -253,7 +273,9 @@ const deleteCost = async (id) => {
         <div className={classes.searchInput}>
           <SearchIcon style={{marginRight:'0.4rem'}}/>
           <DateRange
-            // onChange={handleSearch}
+            startValue={startValue}
+            endValue={endValue}
+            onChange={handleFilter}
           />
         </div>
         <Controls.Button
@@ -297,7 +319,7 @@ const deleteCost = async (id) => {
               <TableCell>{costRecord.Title}</TableCell>
               <TableCell>{costRecord.Description}</TableCell>
               <TableCell>{costRecord.Amount}</TableCell>
-              <TableCell>{costRecord.date}</TableCell>
+              <TableCell>{convertToyyyyMMdd(costRecord.Date)}</TableCell>
               <TableCell>
                 <ActionButton 
                   color="default"
@@ -308,7 +330,7 @@ const deleteCost = async (id) => {
                 </ActionButton>
                 <ActionButton 
                   color="primary"
-                  onClick={() => updateHandle(costRecord)}
+                  onClick={() => costUpdateHandle(costRecord)}
                 >
                   <EditOutlinedIcon fontSize="small" />
                 </ActionButton>
@@ -339,8 +361,8 @@ const deleteCost = async (id) => {
         setOpenPopup={setOpenPopup}
       >
        <CostForm 
-        updateCostRecords={updateCostRecords}
         costUpdateForEdit={costUpdateForEdit}
+        updateCostRecords={updateCostRecords}
        />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
