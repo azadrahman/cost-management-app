@@ -12,8 +12,8 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-## App Features
-- User Authentication
+## App Features of Sprint-2
+- Cost entity handle
 - Will create daily cost table
 - Will update and delete cost table
 - Will upload doc, img, pdf
